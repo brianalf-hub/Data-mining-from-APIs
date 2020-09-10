@@ -1,0 +1,49 @@
+#Practice Web Data mining, codes derived from the R Studio youtube channel
+# but edited some of the script
+
+#From https://www.youtube.com/watch?v=lV3u6Dc93T0
+
+library(httr)
+library(jsonlite)
+library(xml2)
+library(magrittr)
+
+#test of GET function 
+r <- GET("https://swapi.dev/api/planets/1")
+status_code(r)
+headers(r)
+str(content(r))
+
+# Goal: Get the data for planet Alderaan
+# verb (method) = GET
+# URL (endpoint) = https://swapi.dev/api/planets/1
+# parameter = search
+
+alderaan <- GET("https://swapi.dev/api/planets/?search=alderaan")
+# Same call in a different format
+alderaan <- GET("https://swapi.dev/api/planets", query = list(search = "alderaan"))
+
+names(alderaan)
+alderaan$status_code
+alderaan$headers$`content-type`
+
+text_content <- content(alderaan, "text", encoding = "UTF-8")
+text_content
+
+#Parse with httr
+parsed_content <- content(alderaan, "parsed")
+names(parsed_content)
+parsed_content$count
+str(parsed_content$results)
+parsed_content$results[[1]]$name
+parsed_content$results[[1]]$terrain
+
+#Parse with jsonlite
+json_content <- text_content %>% fromJSON
+json_content
+
+planetary_data <- json_content$results
+names(planetary_data)
+
+planetary_data$name
+planetary_data$terrain
